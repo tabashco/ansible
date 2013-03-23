@@ -110,3 +110,4 @@ DEFAULT_SUBSET            = None
 
 ANSIBLE_SSH_ARGS          = get_config(p, 'ssh_connection', 'ssh_args', 'ANSIBLE_SSH_ARGS', None)
 ZEROMQ_PORT               = int(get_config(p, 'fireball', 'zeromq_port', 'ANSIBLE_ZEROMQ_PORT', 5099))
+ANSIBLE_PULL_SUBSET_FACTS = map(str.strip, get_config(p, 'pull_connection', 'pull_subset_facts', 'ANSIBLE_PULL_SUBSET_FACTS', 'ansbile_fqdn').split(','))

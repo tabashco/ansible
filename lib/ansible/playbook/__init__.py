@@ -114,6 +114,26 @@ class PlayBook(object):
         self.private_key_file = private_key_file
         self.only_tags        = only_tags
 
+        if self.transport == 'pull':
+            #we want ansible facts, but we only want to act on this machine
+            results = ansible.runner.Runner(host_list=['127.0.0.1'], transport='local',
+                             module_name='setup', forks=1).run()
+            if results is None:
+                print "Gathering facts for pull transport failed!"
+                sys.exit(1)
+
+            pullsubset = []
+            print results
+            localfacts = results['contacted']['127.0.0.1']['ansible_facts']
+            factswecareabout = C.ANSIBLE_PULL_SUBSET_FACTS
+            for fact in factswecareabout:
+                if type(localfacts[fact]) is list:
+                    map(pullsubset.append, localfacts[fact])
+                else:
+                    pullsubset.append(localfacts[fact])
+            subset = ','.join(pullsubset)
+            inventory.subset(subset)
+
         if inventory is None:
             self.inventory    = ansible.inventory.Inventory(host_list)
             self.inventory.subset(subset)
